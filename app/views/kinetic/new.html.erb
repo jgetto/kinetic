@@ -3,6 +3,8 @@
   var song_title = "Jump then Fall";
  
   $(document).ready(function(){
+   var beats = analyze_song();
+
 	$("#jquery_jplayer_1").jPlayer({
 		ready: function (event) {
 		$(this).jPlayer("setMedia", {
@@ -14,9 +16,58 @@
 	supplied: "m4a, oga",
 	wmode: "window"
 	});
-  });
+
+	   $("#jquery_jplayer_1").bind($.jPlayer.event.timeupdate, function(event) { // Add a listener to report the time play began
+         var time = Math.floor(event.jPlayer.status.currentTime*1)/1;
+         $("#playBeganAtTime").text("Play began at time = " + time);
+         if(time%10 == 0) {
+            add_word();
+         }		   
+         
+	   });
+
+   $("#jquery_jplayer_1").jPlayer("play");
+
+   });
  
 </script>
+<script>
+var poem = ["much","madness","is","divinest","sense","to","a","discerning","eye"]
+var loc = 0
+
+function makeHttpObject() {
+  try {return new XMLHttpRequest();}
+  catch (error) {}
+  try {return new ActiveXObject("Msxml2.XMLHTTP");}
+  catch (error) {}
+  try {return new ActiveXObject("Microsoft.XMLHTTP");}
+  catch (error) {}
+
+  throw new Error("Could not create HTTP request object.");
+}
+
+
+function analyze_song() {
+   var request = makeHttpObject();
+   request.open("GET", "http://developer.echonest.com/api/v4/track/profile?api_key=CJMTSEJKZGMYYF9UI&format=json&id=TRXXHTJ1294CD8F3B3&bucket=audio_summary", false);
+   request.send(null);
+   //alert(request.responseText);
+   $("#response").html(request.responseText);
+   //var myObject = eval('(' + request.responseText + ')');
+}  
+
+function add_word() {
+   word = poem[loc]
+   loc = loc + 1
+   $("#poem").html($("#poem").html()+" "+word)
+}
+
+</script>
+
+<div id="poem"> </div>
+<button onclick="add_word()">add word</button>
+<button onclick="analyze_song()">analyze song</button>
+<div id="playBeganAtTime"></div>
 
 <div id="jquery_jplayer_1" class="jp-jplayer"></div>
 <div id="jp_container_1" class="jp-audio">
@@ -59,3 +110,5 @@ To play the media you will need to either update your browser to a recent versio
 </div>
 </div>
 </div>
+
+<div id="response"></div>
