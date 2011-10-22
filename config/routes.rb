@@ -1,4 +1,8 @@
 Kinetic::Application.routes.draw do
+  get "kinetic/new"
+
+  get "kinetic/show"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
