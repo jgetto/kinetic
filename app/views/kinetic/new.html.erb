@@ -3,32 +3,32 @@
   var song_title = "Jump then Fall";
  
   $(document).ready(function(){
-   var beats = analyze_song();
+   var tempo = analyze_song();
+   var spb = 1/tempo*60*4;
+
+   $("#jquery_jplayer_1").bind($.jPlayer.event.timeupdate, function(event) { // Add a listener to report the time play began
+         var time = Math.floor(event.jPlayer.status.currentTime*1)/1;
+         $("#playBeganAtTime").text("Play began at time = " + time);
+         if(time > spb) {
+            add_word();
+            tempo += tempo;
+         }		   
+         
+	   });
 
 	$("#jquery_jplayer_1").jPlayer({
 		ready: function (event) {
 		$(this).jPlayer("setMedia", {
 	    m4a:"http://www.jplayer.org/audio/m4a/TSP-01-Cro_magnon_man.m4a",
 	    oga:"http://www.jplayer.org/audio/ogg/TSP-01-Cro_magnon_man.ogg"
-	   });
+	   }).jPlayer("play");
 	},
 	swfPath: "../js",
 	supplied: "m4a, oga",
 	wmode: "window"
 	});
 
-	   $("#jquery_jplayer_1").bind($.jPlayer.event.timeupdate, function(event) { // Add a listener to report the time play began
-         var time = Math.floor(event.jPlayer.status.currentTime*1)/1;
-         $("#playBeganAtTime").text("Play began at time = " + time);
-         if(time%10 == 0) {
-            add_word();
-         }		   
-         
-	   });
-
-   $("#jquery_jplayer_1").jPlayer("play");
-
-   });
+	});
  
 </script>
 <script>
@@ -53,7 +53,8 @@ function analyze_song() {
    request.send(null);
    //alert(request.responseText);
    $("#response").html(request.responseText);
-   //var myObject = eval('(' + request.responseText + ')');
+   var myObject = eval('(' + request.responseText + ')');
+   return parseInt(myObject.response.track.audio_summary.tempo);
 }  
 
 function add_word() {
@@ -112,3 +113,13 @@ To play the media you will need to either update your browser to a recent versio
 </div>
 
 <div id="response"></div>
+
+
+
+<p> Welcome to kinect! </p>
+
+<input type="text" value= "please type your words here...">  </input>
+
+<p> Now select a song... </p>
+
+<%= render :partial => "select-song" %> 
